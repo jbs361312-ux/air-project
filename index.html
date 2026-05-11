@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>대기오염 정보</title>
+</head>
+<body>
+
+<h1>전북 대기오염 정보</h1>
+
+<button onclick="loadAir()">조회하기</button>
+
+<pre id="result"></pre>
+
+<script>
+
+async function loadAir() {
+
+    const serviceKey =
+    "b9cab6c43f4ab438fb2bc7869c251889d5c75a7174ac9528b97cf48059d37eb0";
+
+    const url =
+`https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey=${encodeURIComponent(serviceKey)}&returnType=json&numOfRows=5&pageNo=1&sidoName=전북&ver=1.0`;
+
+    try {
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        document.getElementById("result").innerText =
+            JSON.stringify(data, null, 2);
+
+    } catch(error) {
+
+        document.getElementById("result").innerText =
+            "데이터 불러오기 실패";
+    }
+}
+
+</script>
+
+</body>
+</html>
