@@ -2,7 +2,75 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>대기오염 정보</title>
+<title>전북 대기오염 정보</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    text-align: center;
+    padding: 40px;
+}
+
+h1 {
+    color: #333;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#result {
+    margin-top: 30px;
+}
+
+.card {
+    background: white;
+    width: 300px;
+    margin: 15px auto;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: left;
+}
+
+.station {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.good {
+    color: blue;
+}
+
+.normal {
+    color: green;
+}
+
+.bad {
+    color: orange;
+}
+
+.verybad {
+    color: red;
+}
+
+</style>
+
 </head>
 <body>
 
@@ -10,7 +78,7 @@
 
 <button onclick="loadAir()">조회하기</button>
 
-<pre id="result"></pre>
+<div id="result"></div>
 
 <script>
 
@@ -29,31 +97,67 @@ async function loadAir() {
 
         const items = data.response.body.items;
 
-        let resultText = "";
+        let resultHTML = "";
 
         for(let i = 0; i < items.length; i++) {
 
             const air = items[i];
 
-            resultText +=
-`측정소: ${air.stationName}
-미세먼지(PM10): ${air.pm10Value}
-초미세먼지(PM2.5): ${air.pm25Value}
-통합대기지수: ${air.khaiValue}
+            let gradeText = "";
+            let gradeClass = "";
 
-`;
+            if(air.pm10Grade == "1") {
+                gradeText = "좋음";
+                gradeClass = "good";
+            }
+
+            else if(air.pm10Grade == "2") {
+                gradeText = "보통";
+                gradeClass = "normal";
+            }
+
+            else if(air.pm10Grade == "3") {
+                gradeText = "나쁨";
+                gradeClass = "bad";
+            }
+
+            else {
+                gradeText = "매우나쁨";
+                gradeClass = "verybad";
+            }
+
+            resultHTML += `
+            <div class="card">
+
+                <div class="station">
+                    ${air.stationName}
+                </div>
+
+                <p>미세먼지(PM10): ${air.pm10Value}</p>
+
+                <p>초미세먼지(PM2.5): ${air.pm25Value}</p>
+
+                <p class="${gradeClass}">
+                    상태: ${gradeText}
+                </p>
+
+                <p>통합대기지수: ${air.khaiValue}</p>
+
+            </div>
+            `;
         }
 
-        document.getElementById("result").innerText =
-            resultText;
+        document.getElementById("result").innerHTML =
+            resultHTML;
 
     } catch(error) {
 
-        document.getElementById("result").innerText =
-            "데이터 불러오기 실패";
+        document.getElementById("result").innerHTML =
+            "<h3>데이터 불러오기 실패</h3>";
     }
 }
 
 </script>
+
 </body>
 </html>
