@@ -19,13 +19,37 @@ body {
 }
 
 .overlay {
-    background: rgba(0,0,0,0.55);
+    background: rgba(0,0,0,0.6);
     min-height: 100vh;
     padding: 30px;
 }
 
 h1 {
     font-size: 42px;
+}
+
+.intro {
+    max-width: 900px;
+    margin: 20px auto;
+    background: rgba(255,255,255,0.15);
+    padding: 20px;
+    border-radius: 20px;
+    line-height: 1.7;
+    font-size: 18px;
+}
+
+.link-box {
+    margin-top: 15px;
+}
+
+.link-box a {
+    color: #81ecec;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link-box a:hover {
+    text-decoration: underline;
 }
 
 button {
@@ -54,6 +78,7 @@ button:hover {
     margin: 20px auto;
     padding: 20px;
     border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 
 .station {
@@ -92,6 +117,12 @@ canvas {
     padding: 10px;
 }
 
+.ad-image {
+    width: 320px;
+    border-radius: 15px;
+    margin-top: 15px;
+}
+
 </style>
 
 </head>
@@ -101,12 +132,88 @@ canvas {
 
 <h1>🌍 전북 대기오염 정보</h1>
 
+<div class="intro">
+
+대기오염은 미세먼지와 초미세먼지, 오존 등의 유해 물질로 인해 발생하며 호흡기 질환, 천식, 폐 질환 등 다양한 건강 문제를 유발할 수 있다. 특히 어린이와 노약자는 대기오염의 영향을 더욱 크게 받을 수 있으므로 실시간 대기 정보를 확인하고 외부 활동을 조절하는 것이 중요하다.
+
+<div class="link-box">
+
+관련 사이트
+<br><br>
+
+<a href="https://www.me.go.kr" target="_blank">
+환경부
+</a>
+
+<br><br>
+
+<a href="https://www.airkorea.or.kr" target="_blank">
+에어코리아
+</a>
+
+<br><br>
+
+<a href="https://www.mohw.go.kr" target="_blank">
+보건복지부
+</a>
+
+</div>
+
+</div>
+
 <button onclick="loadAir()">조회하기</button>
 
 <div id="result"></div>
 
 <div class="chart-box">
     <canvas id="airChart"></canvas>
+</div>
+
+<div class="intro">
+
+<h2>📢 대기오염 예방 공익 광고</h2>
+
+<p>
+미세먼지는 우리의 건강을 위협합니다.<br>
+외출 전 대기질을 확인하고 마스크 착용과 대중교통 이용으로 깨끗한 환경 만들기에 동참합시다.
+</p>
+
+<img
+class="ad-image"
+src="https://images.unsplash.com/photo-1584036561566-baf8f5f1b144"
+>
+
+</div>
+
+<div class="intro">
+
+<h2>📊 데이터 및 그래프 출처</h2>
+
+<p>
+본 웹사이트의 대기오염 데이터와 그래프는 한국환경공단 에어코리아 OpenAPI를 기반으로 제작되었습니다.
+</p>
+
+<p>
+데이터 출처:
+<a href="https://www.data.go.kr" target="_blank">
+공공데이터포털
+</a>
+</p>
+
+<p>
+API 제공 기관:
+<a href="https://www.airkorea.or.kr" target="_blank">
+에어코리아
+</a>
+</p>
+
+<p>
+환경 정보 제공:
+<a href="https://www.me.go.kr" target="_blank">
+환경부
+</a>
+</p>
+
 </div>
 
 </div>
@@ -172,13 +279,15 @@ async function loadAir() {
                     ${air.stationName}
                 </div>
 
-                <p>미세먼지: ${air.pm10Value}</p>
+                <p>미세먼지(PM10): ${air.pm10Value}</p>
 
-                <p>초미세먼지: ${air.pm25Value}</p>
+                <p>초미세먼지(PM2.5): ${air.pm25Value}</p>
 
                 <p class="${gradeClass}">
                     상태: ${gradeText}
                 </p>
+
+                <p>통합대기지수: ${air.khaiValue}</p>
 
             </div>
             `;
@@ -202,9 +311,7 @@ async function loadAir() {
 
                 datasets: [{
                     label: '미세먼지(PM10)',
-
                     data: pm10Data,
-
                     borderWidth: 1
                 }]
             },
