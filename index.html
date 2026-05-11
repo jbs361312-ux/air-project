@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>전북 대기오염 정보</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 
 body {
@@ -12,40 +14,37 @@ body {
     background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
-    text-align: center;
     color: white;
+    text-align: center;
 }
 
 .overlay {
-    background-color: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.55);
     min-height: 100vh;
-    padding: 40px;
+    padding: 30px;
 }
 
 h1 {
     font-size: 42px;
-    margin-bottom: 20px;
 }
 
 button {
-    background-color: #00b894;
-    color: white;
+    background: #00b894;
     border: none;
     padding: 15px 30px;
+    color: white;
     font-size: 18px;
     border-radius: 12px;
     cursor: pointer;
-    transition: 0.3s;
+    margin-top: 20px;
 }
 
 button:hover {
-    background-color: #019875;
-    transform: scale(1.05);
+    background: #019875;
 }
 
 #result {
-    margin-top: 40px;
+    margin-top: 30px;
 }
 
 .card {
@@ -55,18 +54,11 @@ button:hover {
     margin: 20px auto;
     padding: 20px;
     border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 
 .station {
     font-size: 28px;
     font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.icon {
-    font-size: 50px;
-    margin-bottom: 10px;
 }
 
 .good {
@@ -85,8 +77,19 @@ button:hover {
     color: #ff7675;
 }
 
-p {
-    font-size: 18px;
+.chart-box {
+    width: 90%;
+    max-width: 800px;
+    margin: 40px auto;
+    background: rgba(255,255,255,0.12);
+    padding: 20px;
+    border-radius: 20px;
+}
+
+canvas {
+    background: white;
+    border-radius: 15px;
+    padding: 10px;
 }
 
 </style>
@@ -102,9 +105,15 @@ p {
 
 <div id="result"></div>
 
+<div class="chart-box">
+    <canvas id="airChart"></canvas>
+</div>
+
 </div>
 
 <script>
+
+let chart;
 
 async function loadAir() {
 
@@ -123,44 +132,41 @@ async function loadAir() {
 
         let resultHTML = "";
 
+        let labels = [];
+        let pm10Data = [];
+
         for(let i = 0; i < items.length; i++) {
 
             const air = items[i];
 
+            labels.push(air.stationName);
+            pm10Data.push(air.pm10Value);
+
             let gradeText = "";
             let gradeClass = "";
-            let icon = "";
 
             if(air.pm10Grade == "1") {
                 gradeText = "좋음";
                 gradeClass = "good";
-                icon = "😄";
             }
 
             else if(air.pm10Grade == "2") {
                 gradeText = "보통";
                 gradeClass = "normal";
-                icon = "🙂";
             }
 
             else if(air.pm10Grade == "3") {
                 gradeText = "나쁨";
                 gradeClass = "bad";
-                icon = "😷";
             }
 
             else {
                 gradeText = "매우 나쁨";
                 gradeClass = "verybad";
-                icon = "☠️";
             }
 
             resultHTML += `
             <div class="card">
-
-                <div class="icon">
-                    ${icon}
-                </div>
 
                 <div class="station">
                     ${air.stationName}
@@ -174,14 +180,45 @@ async function loadAir() {
                     상태: ${gradeText}
                 </p>
 
-                <p>통합대기지수: ${air.khaiValue}</p>
-
             </div>
             `;
         }
 
         document.getElementById("result").innerHTML =
             resultHTML;
+
+        const ctx = document.getElementById('airChart');
+
+        if(chart) {
+            chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+
+            type: 'bar',
+
+            data: {
+                labels: labels,
+
+                datasets: [{
+                    label: '미세먼지(PM10)',
+
+                    data: pm10Data,
+
+                    borderWidth: 1
+                }]
+            },
+
+            options: {
+                responsive: true,
+
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
 
     } catch(error) {
 
