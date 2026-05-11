@@ -7,66 +7,86 @@
 <style>
 
 body {
+    margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f4f6f9;
+    background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     text-align: center;
+    color: white;
+}
+
+.overlay {
+    background-color: rgba(0,0,0,0.5);
+    min-height: 100vh;
     padding: 40px;
 }
 
 h1 {
-    color: #333;
+    font-size: 42px;
+    margin-bottom: 20px;
 }
 
 button {
-    background-color: #4CAF50;
+    background-color: #00b894;
     color: white;
     border: none;
-    padding: 12px 24px;
-    font-size: 16px;
-    border-radius: 10px;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 12px;
     cursor: pointer;
-    margin-top: 20px;
+    transition: 0.3s;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #019875;
+    transform: scale(1.05);
 }
 
 #result {
-    margin-top: 30px;
+    margin-top: 40px;
 }
 
 .card {
-    background: white;
-    width: 300px;
-    margin: 15px auto;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    width: 320px;
+    margin: 20px auto;
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    text-align: left;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 
 .station {
-    font-size: 22px;
+    font-size: 28px;
     font-weight: bold;
     margin-bottom: 10px;
-    color: #222;
+}
+
+.icon {
+    font-size: 50px;
+    margin-bottom: 10px;
 }
 
 .good {
-    color: blue;
+    color: #74b9ff;
 }
 
 .normal {
-    color: green;
+    color: #55efc4;
 }
 
 .bad {
-    color: orange;
+    color: #fdcb6e;
 }
 
 .verybad {
-    color: red;
+    color: #ff7675;
+}
+
+p {
+    font-size: 18px;
 }
 
 </style>
@@ -74,11 +94,15 @@ button:hover {
 </head>
 <body>
 
-<h1>전북 대기오염 정보</h1>
+<div class="overlay">
+
+<h1>🌍 전북 대기오염 정보</h1>
 
 <button onclick="loadAir()">조회하기</button>
 
 <div id="result"></div>
+
+</div>
 
 <script>
 
@@ -105,37 +129,46 @@ async function loadAir() {
 
             let gradeText = "";
             let gradeClass = "";
+            let icon = "";
 
             if(air.pm10Grade == "1") {
                 gradeText = "좋음";
                 gradeClass = "good";
+                icon = "😄";
             }
 
             else if(air.pm10Grade == "2") {
                 gradeText = "보통";
                 gradeClass = "normal";
+                icon = "🙂";
             }
 
             else if(air.pm10Grade == "3") {
                 gradeText = "나쁨";
                 gradeClass = "bad";
+                icon = "😷";
             }
 
             else {
-                gradeText = "매우나쁨";
+                gradeText = "매우 나쁨";
                 gradeClass = "verybad";
+                icon = "☠️";
             }
 
             resultHTML += `
             <div class="card">
 
+                <div class="icon">
+                    ${icon}
+                </div>
+
                 <div class="station">
                     ${air.stationName}
                 </div>
 
-                <p>미세먼지(PM10): ${air.pm10Value}</p>
+                <p>미세먼지: ${air.pm10Value}</p>
 
-                <p>초미세먼지(PM2.5): ${air.pm25Value}</p>
+                <p>초미세먼지: ${air.pm25Value}</p>
 
                 <p class="${gradeClass}">
                     상태: ${gradeText}
@@ -153,7 +186,7 @@ async function loadAir() {
     } catch(error) {
 
         document.getElementById("result").innerHTML =
-            "<h3>데이터 불러오기 실패</h3>";
+            "<h2>데이터 불러오기 실패</h2>";
     }
 }
 
