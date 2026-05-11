@@ -27,8 +27,25 @@ async function loadAir() {
         const response = await fetch(url);
         const data = await response.json();
 
+        const items = data.response.body.items;
+
+        let resultText = "";
+
+        for(let i = 0; i < items.length; i++) {
+
+            const air = items[i];
+
+            resultText +=
+`측정소: ${air.stationName}
+미세먼지(PM10): ${air.pm10Value}
+초미세먼지(PM2.5): ${air.pm25Value}
+통합대기지수: ${air.khaiValue}
+
+`;
+        }
+
         document.getElementById("result").innerText =
-            JSON.stringify(data, null, 2);
+            resultText;
 
     } catch(error) {
 
@@ -38,6 +55,5 @@ async function loadAir() {
 }
 
 </script>
-
 </body>
 </html>
